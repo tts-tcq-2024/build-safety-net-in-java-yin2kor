@@ -1,6 +1,41 @@
 package CodeTestCoverJava;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import static javax.swing.UIManager.put;
+
 public class Soundex {
+
+    private static final HashMap<Character, Character> soundexMap = new HashMap<Character, Character>() {
+        {
+            put('B', '1');
+            put('F', '1');
+            put('P', '1');
+            put('V', '1');
+            put('C', '2');
+            put('G', '2');
+            put('J', '2');
+            put('K', '2');
+            put('Q', '2');
+            put('S', '2');
+            put('X', '2');
+            put('Z', '2');
+            put('D', '3');
+            put('T', '3');
+            put('L', '4');
+            put('M', '5');
+            put('N', '5');
+            put('R', '6');
+        }
+    };
+
+    private static final List<Character> vowels = Arrays.asList('a','e','i','o','u');
+    private static final List<Character> ignoreAppendCharacters = Arrays.asList('w','h','y');
+
+
 
     public static final char INVALID_CHAR = '8';
     public static String generateSoundex(String name) {
@@ -10,62 +45,66 @@ public class Soundex {
 
         // Retain the first letter of the name and convert it to uppercase
         char firstLetter = Character.toUpperCase(name.charAt(0));
-        StringBuilder soundex = new StringBuilder().append(firstLetter);
+        StringBuilder soundex = new StringBuilder().append(Character.toUpperCase(firstLetter));
 
         // Convert the rest of the name to uppercase and map to Soundex digits
-        for (int i = 1, index = 1; i < name.length() && index < 4; i++) {
-            char code = getSoundexCode(name.charAt(i));
-            if (code != '0' && code != '7') {
-                char currentCode = GetSoundexCharacter(name, i);
-                if (INVALID_CHAR != currentCode)
-                {
-                    soundex.append(currentCode);
-                    index++;
-                }
-            }
+        for (int i = 1; i < name.length(); i++) {
+            AppendToStringBuilder(soundex, GetSoundexCharacter(name,i));
         }
 
-        // Pad with '0' to ensure the code is 4 characters long
         while (soundex.length() < 4) {
             soundex.append('0');
         }
 
-        return soundex.toString();
+        return soundex.substring(0,4);
+    }
+
+    private static void AppendToStringBuilder(StringBuilder soundex, char c) {
+        if (INVALID_CHAR != c) {
+            soundex.append(c);
+        }
     }
 
     private static char GetSoundexCharacter(String name, int i) {
-        char result = getSoundexCode(name.charAt(i));
-        if (getSoundexCode(name.charAt(i-1)) == result) {
+        char current = getSoundexCode(name.charAt(i));
+        char previous = getSoundexCode(name.charAt(i-1));
+        if (vowels.contains(name.charAt(i))) {
             return INVALID_CHAR;
         }
-        if (i > 1 && getSoundexCode(name.charAt(i-1)) == '7') {
-            if (getSoundexCode(name.charAt(i-2)) == result) {
-                return INVALID_CHAR;
-            }
+        if (ignoreAppendCharacters.contains(name.charAt(i))) {
+            return INVALID_CHAR;
         }
-        return result;
-
+        if (current == previous) {
+            return INVALID_CHAR;
+        }
+        if (vowels.contains(name.charAt(i-1))) {
+            return current;
+        }
+        if (RepeatedCharactersBetweenIgnoreCharacters(name, i)) {
+            return current;
+        }
+        return INVALID_CHAR;
     }
+
+
+    private static boolean RepeatedCharactersBetweenIgnoreCharacters(String name, int currentIndex) {
+        if (currentIndex <= 1) {
+            return true;
+        }
+        if (ignoreAppendCharacters.contains(name.charAt(currentIndex-1))) {
+            return !(getSoundexCode(name.charAt(currentIndex)) == getSoundexCode(name.charAt(currentIndex-2)));
+        } else {
+            return true;
+        }
+    }
+
 
 
     private static char getSoundexCode(char c) {
         c = Character.toUpperCase(c);
-        if (c == 'B' || c == 'F' || c == 'P' || c == 'V') {
-            return '1';
-        } else if (c == 'C' || c == 'G' || c == 'J' || c == 'K' || c == 'Q' || c == 'S' || c == 'X' || c == 'Z') {
-            return '2';
-        } else if (c == 'D' || c == 'T') {
-            return '3';
-        } else if (c == 'L') {
-            return '4';
-        } else if (c == 'M' || c == 'N') {
-            return '5';
-        } else if (c == 'R') {
-            return '6';
-        } else if (c == 'H' || c == 'W' || c == 'Y') {
-            return '7';
-        } else {
-            return '0'; // For A, E, I, O, U and any other characters
+        if (soundexMap.containsKey(c)) {
+            return soundexMap.get(c);
         }
+        return INVALID_CHAR;
     }
 }
