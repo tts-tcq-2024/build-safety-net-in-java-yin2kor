@@ -50,23 +50,22 @@ public class Soundex {
 
     private static char getSoundexCode(char c) {
         c = Character.toUpperCase(c);
-        switch (c) {
-            case 'B': case 'F': case 'P': case 'V':
-                return '1';
-            case 'C': case 'G': case 'J': case 'K': case 'Q': case 'S': case 'X': case 'Z':
-                return '2';
-            case 'D': case 'T':
-                return '3';
-            case 'L':
-                return '4';
-            case 'M': case 'N':
-                return '5';
-            case 'R':
-                return '6';
-            case 'H' : case 'W' : case 'Y':
-                return '7';
-            default:
-                return '0'; // For A, E, I, O, U, H, W, Y
+        if (c == 'B' || c == 'F' || c == 'P' || c == 'V') {
+            return '1';
+        } else if (c == 'C' || c == 'G' || c == 'J' || c == 'K' || c == 'Q' || c == 'S' || c == 'X' || c == 'Z') {
+            return '2';
+        } else if (c == 'D' || c == 'T') {
+            return '3';
+        } else if (c == 'L') {
+            return '4';
+        } else if (c == 'M' || c == 'N') {
+            return '5';
+        } else if (c == 'R') {
+            return '6';
+        } else if (c == 'H' || c == 'W' || c == 'Y') {
+            return '7';
+        } else {
+            return '0'; // For A, E, I, O, U and any other characters
         }
     }
 }
