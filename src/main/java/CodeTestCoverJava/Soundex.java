@@ -1,11 +1,9 @@
 package CodeTestCoverJava;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static javax.swing.UIManager.put;
 
 public class Soundex {
 
@@ -44,7 +42,7 @@ public class Soundex {
         }
 
         // Retain the first letter of the name and convert it to uppercase
-        StringBuilder soundex = CreateSoundexString(name);
+        StringBuilder soundex = CreateSoundexString(name.toUpperCase());
 
         while (soundex.length() < 4) {
             soundex.append('0');
@@ -56,53 +54,50 @@ public class Soundex {
     private static StringBuilder CreateSoundexString(String name) {
         char firstLetter = Character.toUpperCase(name.charAt(0));
         StringBuilder soundex = new StringBuilder().append(Character.toUpperCase(firstLetter));
-
         // Convert the rest of the name to uppercase and map to Soundex digits
         for (int i = 1; i < name.length(); i++) {
-            char code = GetSoundexCharacter(name, i);
-            if (INVALID_CHAR != code) {
-                soundex.append(code);
+            if (isValidCharacterForSoundex(name, i)) {
+                soundex.append(soundexMap.get(name.charAt(i)));
             }
         }
         return soundex;
 
     }
 
-    private static char GetSoundexCharacter(String name, int i) {
-        char current = getSoundexCode(name.charAt(i));
-        char previous = getSoundexCode(name.charAt(i - 1));
-        if (vowels.contains(name.charAt(i)) ||
-                ignoreAppendCharacters.contains(name.charAt(i)) ||
-                current == previous) {
-            return INVALID_CHAR;
+    private static boolean isValidCharacterForSoundex(String name, int index) {
+        boolean baseCheck = isAlpha(name, index) &&
+                !isVowel(name, index) &&
+                !isIgnoreCharacter(name, index) &&
+                !isConsecutiveCharacter(name, index);
+        if (baseCheck && isIgnoreCharacter(name, index-1)) {
+            baseCheck = !isRepeatedBetweenIgnoreCharacter(name, index);
         }
-        if (vowels.contains(name.charAt(i - 1))) {
-            return current;
+        return baseCheck;
+    }
+
+    private static boolean isRepeatedBetweenIgnoreCharacter(String name, int index) {
+        boolean status = false;
+        if (index > 1) {
+            status = name.charAt(index) == name.charAt(index-2);
         }
-        if (RepeatedCharactersBetweenIgnoreCharacters(name, i)) {
-            return current;
-        }
-        return INVALID_CHAR;
+        return status;
     }
 
 
-    private static boolean RepeatedCharactersBetweenIgnoreCharacters(String name, int currentIndex) {
-        if (currentIndex <= 1) {
-            return true;
-        }
-        if (ignoreAppendCharacters.contains(name.charAt(currentIndex - 1))) {
-            return !(getSoundexCode(name.charAt(currentIndex)) == getSoundexCode(name.charAt(currentIndex - 2)));
-        } else {
-            return true;
-        }
+    private static boolean isConsecutiveCharacter(String name, int index) {
+        return name.charAt(index) == name.charAt(index-1);
     }
 
-
-    private static char getSoundexCode(char c) {
-        c = Character.toUpperCase(c);
-        if (soundexMap.containsKey(c)) {
-            return soundexMap.get(c);
-        }
-        return INVALID_CHAR;
+    private static boolean isIgnoreCharacter(String name, int index) {
+        return ignoreAppendCharacters.contains(name.charAt(index));
     }
+
+    private static boolean isAlpha(String name, int index) {
+        return Character.isAlphabetic(name.charAt(index));
+    }
+
+    private static boolean isVowel(String name, int index) {
+        return vowels.contains(name.charAt(index));
+    }
+
 }
