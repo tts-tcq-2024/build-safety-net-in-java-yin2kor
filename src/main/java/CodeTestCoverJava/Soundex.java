@@ -43,10 +43,7 @@ public class Soundex {
 
         // Retain the first letter of the name and convert it to uppercase
         StringBuilder soundex = CreateSoundexString(name.toUpperCase());
-
-        while (soundex.length() < 4) {
-            soundex.append('0');
-        }
+        AppendPadding(soundex);
 
         return soundex.substring(0, 4);
     }
@@ -65,23 +62,28 @@ public class Soundex {
     }
 
     private static boolean isValidCharacterForSoundex(String name, int index) {
-        boolean baseCheck = isAlpha(name, index) &&
+        return isAlpha(name, index) &&
                 !isVowel(name, index) &&
                 !isIgnoreCharacter(name, index) &&
-                !isConsecutiveCharacter(name, index);
-        if (baseCheck && isIgnoreCharacter(name, index-1)) {
-            baseCheck = !isRepeatedBetweenIgnoreCharacter(name, index);
-        }
-        return baseCheck;
+                !isConsecutiveCharacter(name, index) &&
+                !isPrefixedByIgnore(name, index);
+
     }
 
-    private static boolean isRepeatedBetweenIgnoreCharacter(String name, int index) {
-        boolean status = false;
-        if (index > 1) {
-            status = name.charAt(index) == name.charAt(index-2);
+    private static boolean isPrefixedByIgnore(String name, int index) {
+        boolean status = true;
+        if (isIgnoreCharacter(name, index-1) && index > 1) {
+            status = !(name.charAt(index) == name.charAt(index-2));
         }
         return status;
     }
+
+    private static void AppendPadding(StringBuilder soundex) {
+        while (soundex.length() < 4) {
+            soundex.append('0');
+        }
+    }
+    
 
 
     private static boolean isConsecutiveCharacter(String name, int index) {
