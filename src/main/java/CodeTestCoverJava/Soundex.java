@@ -30,8 +30,8 @@ public class Soundex {
         }
     };
 
-    private static final List<Character> vowels = Arrays.asList('a', 'e', 'i', 'o', 'u');
-    private static final List<Character> ignoreAppendCharacters = Arrays.asList('w', 'h', 'y');
+    private static final List<Character> vowels = Arrays.asList('A', 'E', 'I', 'O', 'U');
+    private static final List<Character> ignoreAppendCharacters = Arrays.asList('W', 'H', 'Y');
 
 
     public static final char INVALID_CHAR = '8';
