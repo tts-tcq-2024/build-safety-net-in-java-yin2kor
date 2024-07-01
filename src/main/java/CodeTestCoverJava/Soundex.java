@@ -62,12 +62,20 @@ public class Soundex {
     }
 
     private static boolean isValidCharacterForSoundex(String name, int index) {
+        return  basicCharacterValidation(name, index) && prefixCharacterValidation(name, index);
+
+
+    }
+
+    private static boolean basicCharacterValidation(String name , int index) {
         return isAlpha(name, index) &&
                 !isVowel(name, index) &&
-                !isIgnoreCharacter(name, index) &&
-                !isConsecutiveCharacter(name, index) &&
-                !isPrefixedByIgnore(name, index);
+                !isIgnoreCharacter(name, index);
+    }
 
+    private static boolean prefixCharacterValidation(String name, int index) {
+        return !isConsecutiveCharacter(name, index) &&
+                !isPrefixedByIgnore(name, index);
     }
 
     private static boolean isPrefixedByIgnore(String name, int index) {
@@ -83,7 +91,7 @@ public class Soundex {
             soundex.append('0');
         }
     }
-    
+
 
 
     private static boolean isConsecutiveCharacter(String name, int index) {
