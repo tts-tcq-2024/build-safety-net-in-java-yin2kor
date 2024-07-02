@@ -1,5 +1,6 @@
 package CodeTestCoverJava;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +54,9 @@ public class Soundex {
         StringBuilder soundex = new StringBuilder().append(Character.toUpperCase(firstLetter));
         // Convert the rest of the name to uppercase and map to Soundex digits
         for (int i = 1; i < name.length(); i++) {
+            System.out.println(name.charAt(i));
             if (isValidCharacterForSoundex(name, i)) {
+                System.out.println("yes");
                 soundex.append(soundexMap.get(name.charAt(i)));
             }
         }
@@ -62,27 +65,24 @@ public class Soundex {
     }
 
     private static boolean isValidCharacterForSoundex(String name, int index) {
-        return  basicCharacterValidation(name, index) && prefixCharacterValidation(name, index);
+        List<Boolean> status = new ArrayList<>();
+        status.add(isAlpha(name, index));
+        status.add(!isVowel(name, index));
+        status.add(!isIgnoreCharacter(name, index));
+        status.add(!isConsecutiveCharacter(name, index));
+        status.add(!isPrefixedByIgnore(name, index));
+        return  !status.contains(false);
 
 
     }
 
-    private static boolean basicCharacterValidation(String name , int index) {
-        return isAlpha(name, index) &&
-                !isVowel(name, index) &&
-                !isIgnoreCharacter(name, index);
-    }
-
-    private static boolean prefixCharacterValidation(String name, int index) {
-        return !isConsecutiveCharacter(name, index) &&
-                !isPrefixedByIgnore(name, index);
-    }
 
     private static boolean isPrefixedByIgnore(String name, int index) {
-        boolean status = true;
+        boolean status = false;
         if (isIgnoreCharacter(name, index-1) && index > 1) {
-            status = !(name.charAt(index) == name.charAt(index-2));
+            status = (soundexMap.get(name.charAt(index)) == soundexMap.get(name.charAt(index-2)));
         }
+        System.out.println(status);
         return status;
     }
 
@@ -95,7 +95,7 @@ public class Soundex {
 
 
     private static boolean isConsecutiveCharacter(String name, int index) {
-        return name.charAt(index) == name.charAt(index-1);
+        return soundexMap.get(name.charAt(index)) == soundexMap.get(name.charAt(index-1));
     }
 
     private static boolean isIgnoreCharacter(String name, int index) {
