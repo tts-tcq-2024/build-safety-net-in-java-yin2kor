@@ -57,6 +57,11 @@ public class SoundexTest {
          assertEquals(Soundex.generateSoundex("Honeyman"),"H555");
     }
 
+    @Test
+    public void testInvalidCharacters() {
+        assertEquals(Soundex.generateSoundex("R@#*("),"R000");
+    }
+
 
 
 

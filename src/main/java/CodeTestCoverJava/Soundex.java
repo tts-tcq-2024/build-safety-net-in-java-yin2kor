@@ -35,8 +35,6 @@ public class Soundex {
     private static final List<Character> ignoreAppendCharacters = Arrays.asList('W', 'H', 'Y');
 
 
-    public static final char INVALID_CHAR = '8';
-
     public static String generateSoundex(String name) {
         if (name == null || name.isEmpty()) {
             return "";
@@ -54,9 +52,7 @@ public class Soundex {
         StringBuilder soundex = new StringBuilder().append(Character.toUpperCase(firstLetter));
         // Convert the rest of the name to uppercase and map to Soundex digits
         for (int i = 1; i < name.length(); i++) {
-            System.out.println(name.charAt(i));
             if (isValidCharacterForSoundex(name, i)) {
-                System.out.println("yes");
                 soundex.append(soundexMap.get(name.charAt(i)));
             }
         }
@@ -82,7 +78,6 @@ public class Soundex {
         if (isIgnoreCharacter(name, index-1) && index > 1) {
             status = (soundexMap.get(name.charAt(index)) == soundexMap.get(name.charAt(index-2)));
         }
-        System.out.println(status);
         return status;
     }
 
