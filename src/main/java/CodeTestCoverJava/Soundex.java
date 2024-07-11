@@ -20,7 +20,7 @@ public class Soundex {
         }
     };
 
-    private static final Character INVALID_CHARACTER = '7';
+    private static final Character INVALID_CHARACTER = '0';
 
     private static final List<Character> vowels = Arrays.asList('A', 'E', 'I', 'O', 'U');
     private static final List<Character> ignoreAppendCharacters = Arrays.asList('W', 'H', 'Y');
