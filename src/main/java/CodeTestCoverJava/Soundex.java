@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class Soundex {
 
-    private static final HashMap<String, Character> soundexCodeMap = new HashMap<>() {
+    private static final HashMap<String, Character> soundexCodeMap = new HashMap<String, Character>() {
         {
             put("BFPV", '1');
             put("CGJKQSXZ", '2');
