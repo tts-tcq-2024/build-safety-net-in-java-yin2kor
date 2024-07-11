@@ -4,32 +4,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 
 public class Soundex {
 
-    private static final HashMap<Character, Character> soundexMap = new HashMap<Character, Character>() {
+    private static final HashMap<String, Character> soundexCodeMap = new HashMap<>() {
         {
-            put('B', '1');
-            put('F', '1');
-            put('P', '1');
-            put('V', '1');
-            put('C', '2');
-            put('G', '2');
-            put('J', '2');
-            put('K', '2');
-            put('Q', '2');
-            put('S', '2');
-            put('X', '2');
-            put('Z', '2');
-            put('D', '3');
-            put('T', '3');
-            put('L', '4');
-            put('M', '5');
-            put('N', '5');
-            put('R', '6');
+            put("BFPV", '1');
+            put("CGJKQSXZ", '2');
+            put("DT", '3');
+            put("L", '4');
+            put("MN", '5');
+            put("R", '6');
         }
     };
+
+    private static final Character INVALID_CHARACTER = '7';
 
     private static final List<Character> vowels = Arrays.asList('A', 'E', 'I', 'O', 'U');
     private static final List<Character> ignoreAppendCharacters = Arrays.asList('W', 'H', 'Y');
@@ -41,23 +32,32 @@ public class Soundex {
         }
 
         // Retain the first letter of the name and convert it to uppercase
-        StringBuilder soundex = CreateSoundexString(name.toUpperCase());
-        AppendPadding(soundex);
+        StringBuilder soundex = createSoundexString(name.toUpperCase());
+        appendPadding(soundex);
 
         return soundex.substring(0, 4);
     }
 
-    private static StringBuilder CreateSoundexString(String name) {
+    private static StringBuilder createSoundexString(String name) {
         char firstLetter = Character.toUpperCase(name.charAt(0));
         StringBuilder soundex = new StringBuilder().append(Character.toUpperCase(firstLetter));
         // Convert the rest of the name to uppercase and map to Soundex digits
-        for (int i = 1; i < name.length(); i++) {
-            if (isValidCharacterForSoundex(name, i)) {
-                soundex.append(soundexMap.get(name.charAt(i)));
+        for (int charracterIndex = 1; charracterIndex < name.length(); charracterIndex++) {
+            if (isValidCharacterForSoundex(name, charracterIndex)) {
+                soundex.append(getCodeForCharacterFromMap(name.charAt(charracterIndex)));
             }
         }
         return soundex;
 
+    }
+
+    private static Character getCodeForCharacterFromMap(Character alphabet) {
+        Character code = INVALID_CHARACTER;
+        Optional<String> selectedKey = soundexCodeMap.keySet().stream().filter(key -> key.indexOf(alphabet) != -1).findFirst();
+        if (selectedKey.isPresent()) {
+            code = soundexCodeMap.get(selectedKey.get());
+        }
+        return code;
     }
 
     private static boolean isValidCharacterForSoundex(String name, int index) {
@@ -76,12 +76,12 @@ public class Soundex {
     private static boolean isPrefixedByIgnore(String name, int index) {
         boolean status = false;
         if (isIgnoreCharacter(name, index-1) && index > 1) {
-            status = (soundexMap.get(name.charAt(index)) == soundexMap.get(name.charAt(index-2)));
+            status = (getCodeForCharacterFromMap(name.charAt(index)) == getCodeForCharacterFromMap(name.charAt(index-2)));
         }
         return status;
     }
 
-    private static void AppendPadding(StringBuilder soundex) {
+    private static void appendPadding(StringBuilder soundex) {
         while (soundex.length() < 4) {
             soundex.append('0');
         }
@@ -90,7 +90,7 @@ public class Soundex {
 
 
     private static boolean isConsecutiveCharacter(String name, int index) {
-        return soundexMap.get(name.charAt(index)) == soundexMap.get(name.charAt(index-1));
+        return getCodeForCharacterFromMap(name.charAt(index)) == getCodeForCharacterFromMap(name.charAt(index-1));
     }
 
     private static boolean isIgnoreCharacter(String name, int index) {
